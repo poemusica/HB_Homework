@@ -1,5 +1,6 @@
 
 def underpaid(cost, parsed):
+    bad_customers = []
     num_under = 0
     for data_list in parsed:
         customer_id, customer, qty, paid = data_list
@@ -8,13 +9,16 @@ def underpaid(cost, parsed):
             num_under += 1
             shortage = expected - paid
             result = "%s (id %d) underpaid by $%.2f. expected $%.2f, paid $%.2f" % (customer, customer_id, shortage, expected, paid)
-            print result.upper()
-    return ("\n%d customers underpaid\n" % num_under).upper()
+            result = result.upper()
+            bad_customers.append(result)
+    total = ("\n%d customers underpaid\n" % num_under).upper() 
+    return total, bad_customers
 
 
 def parse_file(my_file):
     parsed = []
     for line in my_file:
+        line = line.rstrip()
         data = line.split(',')
         customer_id = int(data[0])
         customer = data[1]
@@ -31,7 +35,14 @@ def main():
 
     p = parse_file(my_file)
 
-    print underpaid(cost, p)
+    msg, bad_list = underpaid(cost, p)
+
+    print msg
+    print '\n'
+
+    for b in bad_list:
+        print b
+
 
     my_file.close()
 
