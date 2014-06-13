@@ -19,10 +19,18 @@ class Melon(object):
             return self.melon_type
         else:
             return "%s %0.2fLB %s" % (self.color, self.weight, self.melon_type)
-    
+
+class Squash(Melon):
+    def prep(self):
+        robots.painterbot.paint(self)
+        robots.cleanerbot.clean(self)
+        robots.stickerbot.apply_logo(self)
+
 
 def main():
-    f = open("standing_orders1.log")
+    f = open("standing_orders2.log")
+
+    inventory_mapping = {'Winter Squash': Squash}
 
     for line in f:
         (melon_type, quantity) = line.rstrip().split(':')
@@ -36,7 +44,10 @@ def main():
                 print "ORDERS FAILED TO BE FULFILLED!"
                 sys.exit()
             
-            m = Melon(melon_type)
+            # decide whether the item is a melon or a squash.
+            melon_class = inventory_mapping.get(melon_type, Melon)
+            m = melon_class(melon_type)
+
             robots.pickerbot.pick(m)
             count += 1
             
